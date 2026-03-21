@@ -24,6 +24,9 @@ public:
 
     virtual ~ArraySequence() override;
 
+    // iterator
+    virtual IEnumerator<T>* get_enumerator() const override;
+
     // operators=
     // copy assignment operator
     ArraySequence<T>& operator=(const ArraySequence<T> &other);

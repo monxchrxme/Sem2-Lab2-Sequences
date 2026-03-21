@@ -24,6 +24,9 @@ public:
 
     virtual ~ListSequence() override;
 
+    // iterator
+    virtual IEnumerator<T>* get_enumerator() const override;
+
     // operators=
     // copy assignment operator
     ListSequence<T>& operator=(const ListSequence<T> &other);

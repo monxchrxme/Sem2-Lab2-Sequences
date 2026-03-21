@@ -6,6 +6,7 @@ add_executable(run_tests
         test_list_sequence.cpp
         test_mutability.cpp
         test_bit_sequence.cpp
+        test_enumerator.cpp
 )
 
 # Самая важная магия линковки:

@@ -1,6 +1,45 @@
 #pragma once
 #include "list_sequence.hpp"
 
+// Nested Class iterator for a list
+
+template <class T>
+class ListEnumerator : public IEnumerator<T> {
+private:
+    const ListSequence<T>* sequence;
+    int current_index;
+
+public:
+    explicit ListEnumerator(const ListSequence<T>* seq) : sequence(seq), current_index(-1) {}
+
+    virtual bool move_next() override {
+        if (current_index + 1 < sequence->get_length()) {
+            current_index++;
+            return true;
+        } else {
+            current_index = sequence->get_length();
+            return false;
+        }
+    }
+
+    virtual const T& get_current() const override {
+        if (current_index < 0 || current_index >= sequence->get_length()) {
+            throw IndexOutOfRange("IEnumerator: Invalid state");
+        }
+        return sequence->get(current_index);
+    }
+
+    virtual void reset() override {
+        current_index = -1;
+    }
+};
+
+// realization of the get_enumerator method
+template <class T>
+IEnumerator<T>* ListSequence<T>::get_enumerator() const {
+    return new ListEnumerator<T>(this);
+}
+
 // constructors
 
 template <class T>

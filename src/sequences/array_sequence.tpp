@@ -1,6 +1,46 @@
 #pragma once
 #include "array_sequence.hpp"
 
+// Nested Class iterator for an array
+
+template <class T>
+class ArrayEnumerator : public IEnumerator<T> {
+private:
+    const ArraySequence<T>* sequence;
+    int current_index;
+
+public:
+    // -1 indicates the state "before the first element"
+    explicit ArrayEnumerator(const ArraySequence<T>* seq) : sequence(seq), current_index(-1) {}
+
+    virtual bool move_next() override {
+        if (current_index + 1 < sequence->get_length()) {
+            current_index++;
+            return true;
+        } else {
+            current_index = sequence->get_length();
+            return false;
+        }
+    }
+
+    virtual const T& get_current() const override {
+        if (current_index < 0 || current_index >= sequence->get_length()) {
+            throw IndexOutOfRange("IEnumerator: Invalid state (call move_next() first)");
+        }
+        return sequence->get(current_index);
+    }
+
+    virtual void reset() override {
+        current_index = -1;
+    }
+};
+
+// realization of the get_enumerator method
+template <class T>
+IEnumerator<T>* ArraySequence<T>::get_enumerator() const {
+    return new ArrayEnumerator<T>(this);
+}
+
 // constructors
 
 template <class T>

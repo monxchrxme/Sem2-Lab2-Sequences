@@ -1,12 +1,15 @@
 #pragma once
 
 #include "icollection.hpp"
+#include "ienumerable.hpp"
 #include "../types/exceptions.hpp"
 
 template <class T>
-class Sequence : public ICollection<T> {
+class Sequence : public ICollection<T>, public IEnumerable<T> {
 public:
     virtual ~Sequence() = default;
+
+    virtual IEnumerator<T>* get_enumerator() const override = 0;
 
     // fabric methods (virtual constructors)
     // create an empty sequence of the same type (array or list)
@@ -30,6 +33,39 @@ public:
     virtual Sequence<T>* map(T (*mapper)(const T&)) const;
     virtual Sequence<T>* where(bool (*predicate)(const T&)) const;
     virtual T reduce(T (*reducer)(const T&, const T&), const T &initial_value) const;
+
+    //  Cpp-style Range-based for loop (for (auto x : seq))
+    class CppIterator {
+    private:
+        const Sequence<T>* seq;
+        int current_index;
+
+    public:
+        CppIterator(const Sequence<T>* sequence, int index) : seq(sequence), current_index(index) {}
+        // 1. dereference operator (retrieving the value)
+        const T& operator*() const {
+            return seq->get(current_index);
+        }
+
+        // 2. increment operator (step forward)
+        CppIterator& operator++() {
+            current_index++;
+            return *this;
+        }
+
+        // 3. comparison operator (have we reached the end?)
+        bool operator!=(const CppIterator& other) const {
+            return current_index != other.current_index;
+        }
+    };
+
+    CppIterator begin() const {
+        return CppIterator(this, 0); // begin with 0 index
+    }
+
+    CppIterator end() const {
+        return CppIterator(this, this->get_length()); // end immediately after the last one
+    }
 };
 
 #include "sequence.tpp"
