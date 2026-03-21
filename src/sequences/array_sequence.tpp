@@ -1,0 +1,192 @@
+#pragma once
+#include "array_sequence.hpp"
+
+// constructors
+
+template <class T>
+ArraySequence<T>::ArraySequence() {
+    this->items = new DynamicArray<T>();
+}
+
+template <class T>
+ArraySequence<T>::ArraySequence(int size) {
+    this->items = new DynamicArray<T>(size);
+}
+
+template <class T>
+ArraySequence<T>::ArraySequence(T *items, int count) {
+    this->items = new DynamicArray<T>(items, count);
+}
+
+template <class T>
+ArraySequence<T>::ArraySequence(const ArraySequence<T> &other) {
+    this->items = new DynamicArray<T>(*(other.items));
+}
+
+template <class T>
+ArraySequence<T>::ArraySequence(ArraySequence<T> &&other) noexcept {
+    this->items = other.items;
+    other.items = nullptr;
+}
+
+template <class T>
+ArraySequence<T>::ArraySequence(const ICollection<T> &collection) {
+    int length = collection.get_length();
+    // OPTIMIZATION: we know the size, so we allocate memory in one piece,
+    // instead of doing a slow append() in a cycle
+    this->items = new DynamicArray<T>(length);
+
+    for (int i = 0; i < length; ++i) {
+        this->items->set(i, collection.get(i));
+    }
+}
+
+template <class T>
+ArraySequence<T>::~ArraySequence() {
+    // here we delete a single DynamicArray object, not an array,
+    // so we use the usual delete, not delete []
+    delete this->items;
+}
+
+// operators=
+
+template <class T>
+ArraySequence<T>& ArraySequence<T>::operator=(const ArraySequence<T> &other) {
+    if (this == &other) {
+        return *this;
+    }
+    // delegate copying to the overloaded operator = inside DynamicArray
+    *(this->items) = *(other.items);
+    return *this;
+}
+
+template <class T>
+ArraySequence<T>& ArraySequence<T>::operator=(ArraySequence<T> &&other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+    delete this->items;
+    this->items = other.items;
+    other.items = nullptr;
+    return *this;
+}
+
+// getters
+
+template <class T>
+const T& ArraySequence<T>::get_first() const {
+    if (this->get_length() == 0) {
+        throw IndexOutOfRange("ArraySequence::get_first: Sequence is empty");
+    }
+    return this->items->get(0);
+}
+
+template <class T>
+const T& ArraySequence<T>::get_last() const {
+    int length = this->get_length();
+    if (length == 0) {
+        throw IndexOutOfRange("ArraySequence::get_last: Sequence is empty");
+    }
+    return this->items->get(length - 1);
+}
+
+template <class T>
+const T& ArraySequence<T>::get(int index) const {
+    return this->items->get(index);
+}
+
+template <class T>
+int ArraySequence<T>::get_length() const {
+    return this->items->get_size();
+}
+
+template <class T>
+Sequence<T>* ArraySequence<T>::get_subsequence(int start_index, int end_index) const {
+    int length = this->get_length();
+    if (start_index < 0 || end_index >= length || start_index > end_index) {
+        throw IndexOutOfRange("ArraySequence::get_subsequence: Invalid indices");
+    }
+
+    // use a polymorphic factory, it will decide on its own whether to create a Mutable or Immutable array
+    Sequence<T> *sub_seq = this->create_empty();
+    try {
+        for (int i = start_index; i <= end_index; ++i) {
+            sub_seq->append(this->get(i));
+        }
+    } catch (...) {
+        delete sub_seq;
+        throw;
+    }
+    return sub_seq;
+}
+
+// modifying operations
+
+template <class T>
+Sequence<T>* ArraySequence<T>::append(const T &item) {
+    // if we are Mutable, target == this
+    // if we are Immutable, target == new clone on the heap
+    ArraySequence<T>* target = this->get_instance();
+
+    int old_size = target->get_length();
+    target->items->resize(old_size + 1);
+    target->items->set(old_size, item);
+
+    return target;
+}
+
+template <class T>
+Sequence<T>* ArraySequence<T>::insert_at(const T &item, int index) {
+    int old_size = this->get_length();
+
+    // OPTIMIZATION: Check boundaries BEFORE cloning
+    if (index < 0 || index > old_size) {
+        throw IndexOutOfRange("ArraySequence::insert_at: Index out of range");
+    }
+
+    ArraySequence<T>* target = this->get_instance();
+
+    target->items->resize(old_size + 1);
+
+    for (int i = old_size; i > index; --i) {
+        target->items->set(i, target->items->get(i - 1));
+    }
+
+    target->items->set(index, item);
+
+    return target;
+}
+
+template <class T>
+Sequence<T>* ArraySequence<T>::prepend(const T &item) {
+    return this->insert_at(item, 0); // reusing the insert_at logic
+}
+
+template <class T>
+Sequence<T>* ArraySequence<T>::remove_at(int index) {
+    if (index < 0 || index >= this->get_length()) {
+        throw IndexOutOfRange("ArraySequence::remove_at: Index out of range");
+    }
+
+    ArraySequence<T>* target = this->get_instance();
+    target->items->remove_at(index);
+
+    return target;
+}
+
+template <class T>
+Sequence<T>* ArraySequence<T>::concat(Sequence<T> *list) const {
+    Sequence<T> *new_seq = this->clone();
+
+    if (list != nullptr) {
+        try {
+            for (int i = 0; i < list->get_length(); ++i) {
+                new_seq->append(list->get(i));
+            }
+        } catch (...) {
+            delete new_seq;
+            throw;
+        }
+    }
+    return new_seq;
+}
