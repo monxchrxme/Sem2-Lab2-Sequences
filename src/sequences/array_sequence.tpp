@@ -230,3 +230,29 @@ Sequence<T>* ArraySequence<T>::concat(Sequence<T> *list) const {
     }
     return new_seq;
 }
+
+// Try-semantics
+
+template <class T>
+Option<T> ArraySequence<T>::try_get_first() const {
+    if (this->get_length() == 0) {
+        return Option<T>(); // return None
+    }
+    return Option<T>(this->get(0)); // return Some(value)
+}
+
+template <class T>
+Option<T> ArraySequence<T>::try_get_last() const {
+    if (this->get_length() == 0) {
+        return Option<T>();
+    }
+    return Option<T>(this->get(this->get_length() - 1));
+}
+
+template <class T>
+Option<T> ArraySequence<T>::try_get(int index) const {
+    if (index < 0 || index >= this->get_length()) {
+        return Option<T>(); // None when out of bounds
+    }
+    return Option<T>(this->get(index));
+}

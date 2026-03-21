@@ -3,6 +3,7 @@
 #include "icollection.hpp"
 #include "ienumerable.hpp"
 #include "../types/exceptions.hpp"
+#include "../types/option.hpp"
 
 template <class T>
 class Sequence : public ICollection<T>, public IEnumerable<T> {
@@ -33,6 +34,11 @@ public:
     virtual Sequence<T>* map(T (*mapper)(const T&)) const;
     virtual Sequence<T>* where(bool (*predicate)(const T&)) const;
     virtual T reduce(T (*reducer)(const T&, const T&), const T &initial_value) const;
+
+    // Try-semantics
+    virtual Option<T> try_get_first() const = 0;
+    virtual Option<T> try_get_last() const = 0;
+    virtual Option<T> try_get(int index) const = 0;
 
     //  Cpp-style Range-based for loop (for (auto x : seq))
     class CppIterator {

@@ -44,6 +44,11 @@ public:
     virtual Sequence<T>* get_subsequence(int start_index, int end_index) const override;
     virtual int get_length() const override;
 
+    // Try-semantics
+    virtual Option<T> try_get_first() const override;
+    virtual Option<T> try_get_last() const override;
+    virtual Option<T> try_get(int index) const override;
+
     // modifying operations
     virtual Sequence<T>* append(const T &item) override;
     virtual Sequence<T>* prepend(const T &item) override;
