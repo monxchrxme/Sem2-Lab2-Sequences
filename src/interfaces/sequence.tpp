@@ -37,15 +37,13 @@ Sequence<T>* Sequence<T>::slice(int index, int count, const Sequence<T>* element
 }
 
 template <class T>
-Sequence<T>* Sequence<T>::map(T (*mapper)(const T&)) const {
-    ISequenceBuilder<T>* builder = this->create_builder();
+T Sequence<T>::reduce(T (*reducer)(const T&, const T&), const T &initial_value) const {
+    T result = initial_value;
 
     for (const auto& item : *this) {
-        builder->append(mapper(item));
+        result = reducer(item, result);
     }
 
-    Sequence<T>* result = builder->build();
-    delete builder;
     return result;
 }
 
@@ -61,17 +59,6 @@ Sequence<T>* Sequence<T>::where(bool (*predicate)(const T&)) const {
 
     Sequence<T>* result = builder->build();
     delete builder;
-    return result;
-}
-
-template <class T>
-T Sequence<T>::reduce(T (*reducer)(const T&, const T&), const T &initial_value) const {
-    T result = initial_value;
-
-    for (const auto& item : *this) {
-        result = reducer(item, result);
-    }
-
     return result;
 }
 

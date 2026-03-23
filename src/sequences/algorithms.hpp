@@ -63,3 +63,20 @@ Pair<Sequence<T>*, Sequence<U>*> Unzip(const Sequence<Pair<T, U>>* seq) {
 
     return result;
 }
+
+template <class T, class U>
+Sequence<U>* Map(const Sequence<T>* seq, U (*mapper)(const T&)) {
+    if (!seq) {
+        throw std::invalid_argument("Map: sequence cannot be null");
+    }
+
+    auto builder = new typename MutableArraySequence<U>::Builder();
+
+    for (const auto& item : *seq) {
+        builder->append(mapper(item));
+    }
+
+    Sequence<U>* result = builder->build();
+    delete builder;
+    return result;
+}

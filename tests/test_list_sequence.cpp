@@ -2,6 +2,7 @@
 #include "../src/sequences/list_sequence.hpp"
 #include "../src/types/exceptions.hpp"
 #include "../src/sequences/mutable_list_sequence.hpp"
+#include "../src/sequences/algorithms.hpp"
 
 namespace {
     int list_square_mapper(const int& x) { return x * x; }
@@ -107,7 +108,8 @@ TEST(ListSequenceTest, FunctionalEngine) {
     int data[] = {1, 2, 3, 4, 5};
     MutableListSequence<int> seq(data, 5);
 
-    Sequence<int>* mapped = seq.map(list_square_mapper);
+//    Sequence<int>* mapped = seq.map(list_square_mapper);           // X
+    Sequence<int>* mapped = Map<int, int>(&seq, list_square_mapper); // V
     EXPECT_EQ(mapped->get(4), 25);
     EXPECT_EQ(mapped->get_length(), 5);
 

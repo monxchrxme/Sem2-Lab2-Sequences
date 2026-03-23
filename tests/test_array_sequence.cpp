@@ -2,6 +2,7 @@
 #include "../src/sequences/array_sequence.hpp"
 #include "../src/types/exceptions.hpp"
 #include "../src/sequences/mutable_array_sequence.hpp"
+#include "../src/sequences/algorithms.hpp"
 
 // anonymous namespace: functions are visible only inside this file (saves from linking conflicts)
 namespace {
@@ -116,7 +117,7 @@ TEST(ArraySequenceTest, FunctionalEngine) {
     MutableArraySequence<int> seq(data, 5);
 
     // Map: squares
-    Sequence<int>* mapped = seq.map(seq_square_mapper);
+    Sequence<int>* mapped = Map<int, int>(&seq, seq_square_mapper);
     EXPECT_EQ(mapped->get(4), 25);
     EXPECT_EQ(mapped->get_length(), 5);
 

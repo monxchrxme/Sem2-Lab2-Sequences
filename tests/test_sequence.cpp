@@ -2,9 +2,12 @@
 #include "../src/sequences/mutable_array_sequence.hpp"
 #include "../src/sequences/immutable_list_sequence.hpp"
 #include "../src/types/exceptions.hpp"
+#include "../src/sequences/algorithms.hpp"
+#include <string>
 
 int square(const int& x) { return x * x; }
 bool is_even_seq(const int& x) { return x % 2 == 0; }
+std::string int_to_string(const int& x) { return "Number: " + std::to_string(x); }
 int sum_reducer(const int& current, const int& acc) { return acc + current; }
 
 
@@ -92,16 +95,29 @@ TEST(SequenceBaseTest, Concat_WithNullptr) {
 
 // Map, Where, Reduce test
 
-TEST(SequenceBaseTest, Map_TransformsElements) {
+TEST(SequenceBaseTest, Map_TransformsElements_SameType) {
     int data[] = {1, 2, 3};
     MutableArraySequence<int> seq(data, 3);
 
-    Sequence<int>* mapped = seq.map(square);
+    Sequence<int>* mapped = Map<int, int>(&seq, square);
 
     ASSERT_EQ(mapped->get_length(), 3);
     EXPECT_EQ(mapped->get(0), 1);
     EXPECT_EQ(mapped->get(1), 4);
     EXPECT_EQ(mapped->get(2), 9);
+
+    delete mapped;
+}
+
+TEST(SequenceBaseTest, Map_ChangesType_IntToString) {
+    int data[] = {10, 20};
+    ImmutableListSequence<int> seq(data, 2);
+
+    Sequence<std::string>* mapped = Map<int, std::string>(&seq, int_to_string);
+
+    ASSERT_EQ(mapped->get_length(), 2);
+    EXPECT_EQ(mapped->get(0), "Number: 10");
+    EXPECT_EQ(mapped->get(1), "Number: 20");
 
     delete mapped;
 }

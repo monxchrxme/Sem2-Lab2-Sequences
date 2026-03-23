@@ -34,10 +34,9 @@ public:
     virtual Sequence<T>* insert_at(const T &item, int index) = 0;
     virtual Sequence<T>* remove_at(int index) = 0;
 
-    // map-reduce operations
-    virtual Sequence<T>* map(T (*mapper)(const T&)) const;
-    virtual Sequence<T>* where(bool (*predicate)(const T&)) const;
-    virtual T reduce(T (*reducer)(const T&, const T&), const T &initial_value) const;
+    // where / reduce operations
+    Sequence<T>* where(bool (*predicate)(const T&)) const;
+    T reduce(T (*reducer)(const T&, const T&), const T &initial_value) const;
 
     // Try-semantics
     Option<T> try_get_first() const;
