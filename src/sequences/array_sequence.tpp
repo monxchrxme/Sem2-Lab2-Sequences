@@ -140,26 +140,6 @@ int ArraySequence<T>::get_length() const {
     return this->items->get_size();
 }
 
-template <class T>
-Sequence<T>* ArraySequence<T>::get_subsequence(int start_index, int end_index) const {
-    int length = this->get_length();
-    if (start_index < 0 || end_index >= length || start_index > end_index) {
-        throw IndexOutOfRange("ArraySequence::get_subsequence: Invalid indices");
-    }
-
-    // use a polymorphic factory, it will decide on its own whether to create a Mutable or Immutable array
-    Sequence<T> *sub_seq = this->create_empty();
-    try {
-        for (int i = start_index; i <= end_index; ++i) {
-            sub_seq->append(this->get(i));
-        }
-    } catch (...) {
-        delete sub_seq;
-        throw;
-    }
-    return sub_seq;
-}
-
 // modifying operations
 
 template <class T>
@@ -212,23 +192,6 @@ Sequence<T>* ArraySequence<T>::remove_at(int index) {
     target->items->remove_at(index);
 
     return target;
-}
-
-template <class T>
-Sequence<T>* ArraySequence<T>::concat(Sequence<T> *list) const {
-    Sequence<T> *new_seq = this->clone();
-
-    if (list != nullptr) {
-        try {
-            for (int i = 0; i < list->get_length(); ++i) {
-                new_seq->append(list->get(i));
-            }
-        } catch (...) {
-            delete new_seq;
-            throw;
-        }
-    }
-    return new_seq;
 }
 
 // Try-semantics

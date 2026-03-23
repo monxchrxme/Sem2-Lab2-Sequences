@@ -41,7 +41,6 @@ public:
     virtual const T& get_first() const override;
     virtual const T& get_last() const override;
     virtual const T& get(int index) const override;
-    virtual Sequence<T>* get_subsequence(int start_index, int end_index) const override;
     virtual int get_length() const override;
 
     // Try-semantics
@@ -54,7 +53,6 @@ public:
     virtual Sequence<T>* prepend(const T &item) override;
     virtual Sequence<T>* insert_at(const T &item, int index) override;
     virtual Sequence<T>* remove_at(int index) override;
-    virtual Sequence<T>* concat(Sequence<T> *list) const override;
 };
 
 #include "list_sequence.tpp"

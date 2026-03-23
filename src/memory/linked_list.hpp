@@ -42,7 +42,7 @@ private:
         Node *prev;
 
         // node constructor
-        Node(const T &data) : data(data), next(nullptr), prev(nullptr) {}
+        explicit Node(const T &data) : data(data), next(nullptr), prev(nullptr) {}
     };
 
     Node *head;

@@ -1,53 +1,89 @@
 #pragma once
 #include "sequence.hpp"
+#include "../types/exceptions.hpp"
 
 template <class T>
 Sequence<T>* Sequence<T>::map(T (*mapper)(const T&)) const {
-    Sequence<T>* result = this->create_empty();
+    ISequenceBuilder<T>* builder = this->create_builder();
 
-    for (int i = 0; i < this->get_length(); ++i) {
-        T mapped_value = mapper(this->get(i));
-
-        Sequence<T>* next_result = result->append(mapped_value);
-
-        // MEMORY PROTECTION: if append returned a new object (as it will be in ImmutableSequence),
-        // this means that the old intermediate result object is no longer needed, so we delete it
-        if (next_result != result) {
-            delete result;
-            result = next_result;
-        }
+    for (const auto& item : *this) {
+        builder->append(mapper(item));
     }
 
+    Sequence<T>* result = builder->build();
+    delete builder;
     return result;
 }
 
 template <class T>
 Sequence<T>* Sequence<T>::where(bool (*predicate)(const T&)) const {
-    Sequence<T>* result = this->create_empty();
+    ISequenceBuilder<T>* builder = this->create_builder();
 
-    for (int i = 0; i < this->get_length(); ++i) {
-        const T& current_value = this->get(i);
-
-        if (predicate(current_value)) {
-            Sequence<T>* next_result = result->append(current_value);
-            // MEMORY PROTECTION: the same as in map
-            if (next_result != result) {
-                delete result;
-                result = next_result;
-            }
+    for (const auto& item : *this) {
+        if (predicate(item)) {
+            builder->append(item);
         }
+    }
+
+    Sequence<T>* result = builder->build();
+    delete builder;
+    return result;
+}
+
+template <class T>
+T Sequence<T>::reduce(T (*reducer)(const T&, const T&), const T &initial_value) const {
+    T result = initial_value;
+
+    for (const auto& item : *this) {
+        result = reducer(item, result);
     }
 
     return result;
 }
 
 template <class T>
-T Sequence<T>::reduce(T (*reducer)(const T&, const T&), const T &initial_value) const {
-    T accumulator = initial_value;
+Sequence<T>* Sequence<T>::get_subsequence(int start_index, int end_index) const {
+    int len = this->get_length();
 
-    for (int i = 0; i < this->get_length(); ++i) {
-        accumulator = reducer(accumulator, this->get(i));
+    if (start_index < 0 || start_index >= len || end_index < 0 || end_index >= len || start_index > end_index) {
+        throw IndexOutOfRange("GetSubsequence: Invalid indices");
     }
 
-    return accumulator;
+    ISequenceBuilder<T>* builder = this->create_builder();
+    int current_index = 0;
+
+    for (const auto& item : *this) {
+        if (current_index >= start_index && current_index <= end_index) {
+            builder->append(item);
+        }
+        if (current_index > end_index) {
+            break;
+        }
+        current_index++;
+    }
+
+    Sequence<T>* result = builder->build();
+    delete builder;
+    return result;
+}
+
+template <class T>
+Sequence<T>* Sequence<T>::concat(Sequence<T> *list) const {
+    if (!list) {
+        return this->clone();
+    }
+
+    ISequenceBuilder<T>* builder = this->create_builder();
+
+    for (const auto& item : *this) {
+        builder->append(item);
+    }
+
+    for (const auto& item : *list) {
+        builder->append(item);
+    }
+
+    Sequence<T>* result = builder->build();
+    delete builder;
+    return result;
 }

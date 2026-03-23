@@ -132,28 +132,6 @@ int ListSequence<T>::get_length() const {
     return this->items->get_length();
 }
 
-template <class T>
-Sequence<T>* ListSequence<T>::get_subsequence(int start_index, int end_index) const {
-    int length = this->get_length();
-    if (start_index < 0 || end_index >= length || start_index > end_index) {
-        throw IndexOutOfRange("ListSequence::get_subsequence: Invalid indices");
-    }
-
-    // use a polymorphic factory, it will decide on its own whether to create a Mutable or Immutable array
-    Sequence<T> *sub_seq = this->create_empty();
-    try {
-        // we use the abstract method get(i), because it is inside the LinkedList
-        // and already optimized for tail-first search if the index is in the second half
-        for (int i = start_index; i <= end_index; ++i) {
-            sub_seq->append(this->get(i));
-        }
-    } catch (...) {
-        delete sub_seq;
-        throw;
-    }
-    return sub_seq;
-}
-
 // modifying operations
 
 template <class T>
@@ -194,25 +172,6 @@ Sequence<T>* ListSequence<T>::remove_at(int index) {
     target->items->remove_at(index);
 
     return target;
-}
-
-template <class T>
-Sequence<T>* ListSequence<T>::concat(Sequence<T> *list) const {
-    Sequence<T> *new_seq = this->clone();
-
-    if (list != nullptr) {
-        try {
-            // polymorphic pass through the second collection. We don't know if a list is an array or a list
-            // but thanks to the Sequence interface we can simply call get()
-            for (int i = 0; i < list->get_length(); ++i) {
-                new_seq->append(list->get(i));
-            }
-        } catch (...) {
-            delete new_seq;
-            throw;
-        }
-    }
-    return new_seq;
 }
 
 // Try-semantics
