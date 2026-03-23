@@ -18,12 +18,16 @@ public:
         MutableArraySequence<T>* temp_buffer;
     public:
         Builder() { temp_buffer = new MutableArraySequence<T>(); }
-        virtual void append(const T& item) override { temp_buffer->append(item); }
+        virtual void append(const T& item) override {
+            temp_buffer->append(item);
+        }
 
         virtual Sequence<T>* build() override {
             int len = temp_buffer->get_length();
             T* arr = new T[len];
-            for(int i = 0; i < len; ++i) arr[i] = temp_buffer->get(i);
+            for(int i = 0; i < len; ++i) {
+                arr[i] = temp_buffer->get(i);
+            }
 
             Sequence<T>* result = new ImmutableArraySequence<T>(arr, len);
 

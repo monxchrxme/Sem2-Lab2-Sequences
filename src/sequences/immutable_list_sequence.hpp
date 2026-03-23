@@ -18,13 +18,17 @@ public:
         MutableListSequence<T>* temp_buffer;
     public:
         Builder() { temp_buffer = new MutableListSequence<T>(); }
-        virtual void append(const T& item) override { temp_buffer->append(item); }
+        virtual void append(const T& item) override {
+            temp_buffer->append(item);
+        }
 
         virtual Sequence<T>* build() override {
             int len = temp_buffer->get_length();
             T* arr = new T[len];
             int i = 0;
-            for(const auto& item : *temp_buffer) arr[i++] = item;
+            for(const auto& item : *temp_buffer) {
+                arr[i++] = item;
+            }
 
             Sequence<T>* result = new ImmutableListSequence<T>(arr, len);
 

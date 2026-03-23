@@ -19,7 +19,6 @@ public:
         return new MutableListSequence<T>(*this);
     }
 
-public:
     // pattern builder
     class Builder : public ISequenceBuilder<T> {
     private:

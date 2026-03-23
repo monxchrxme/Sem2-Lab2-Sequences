@@ -20,7 +20,6 @@ public:
         return new MutableArraySequence<T>(*this);
     }
 
-public:
     // pattern builder
     class Builder : public ISequenceBuilder<T> {
     private:
