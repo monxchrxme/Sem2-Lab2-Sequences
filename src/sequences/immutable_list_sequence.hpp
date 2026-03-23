@@ -42,9 +42,6 @@ public:
         return new Builder();
     }
 
-    // split-slice
-    virtual Sequence<T>* slice(int index, int count, const Sequence<T>* elements = nullptr) const override;
-
     virtual ListSequence<T>* create_empty() const override {
         return new ImmutableListSequence<T>();
     }
@@ -53,8 +50,3 @@ public:
         return new ImmutableListSequence<T>(*this);
     }
 };
-
-template <class T>
-Sequence<T>* ImmutableListSequence<T>::slice(int index, int count, const Sequence<T>* elements) const {
-    return this->slice_internal(index, count, elements);
-}

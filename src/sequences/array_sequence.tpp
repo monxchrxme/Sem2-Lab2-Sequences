@@ -114,23 +114,6 @@ ArraySequence<T>& ArraySequence<T>::operator=(ArraySequence<T> &&other) noexcept
 // getters
 
 template <class T>
-const T& ArraySequence<T>::get_first() const {
-    if (this->get_length() == 0) {
-        throw IndexOutOfRange("ArraySequence::get_first: Sequence is empty");
-    }
-    return this->items->get(0);
-}
-
-template <class T>
-const T& ArraySequence<T>::get_last() const {
-    int length = this->get_length();
-    if (length == 0) {
-        throw IndexOutOfRange("ArraySequence::get_last: Sequence is empty");
-    }
-    return this->items->get(length - 1);
-}
-
-template <class T>
 const T& ArraySequence<T>::get(int index) const {
     return this->items->get(index);
 }
@@ -144,8 +127,8 @@ int ArraySequence<T>::get_length() const {
 
 template <class T>
 Sequence<T>* ArraySequence<T>::append(const T &item) {
-    // if we are Mutable, target == this
-    // if we are Immutable, target == new clone on the heap
+    // if Mutable, target == this
+    // if Immutable, target == new clone on the heap
     ArraySequence<T>* target = this->get_instance();
 
     int old_size = target->get_length();
@@ -192,30 +175,4 @@ Sequence<T>* ArraySequence<T>::remove_at(int index) {
     target->items->remove_at(index);
 
     return target;
-}
-
-// Try-semantics
-
-template <class T>
-Option<T> ArraySequence<T>::try_get_first() const {
-    if (this->get_length() == 0) {
-        return Option<T>(); // return None
-    }
-    return Option<T>(this->get(0)); // return Some(value)
-}
-
-template <class T>
-Option<T> ArraySequence<T>::try_get_last() const {
-    if (this->get_length() == 0) {
-        return Option<T>();
-    }
-    return Option<T>(this->get(this->get_length() - 1));
-}
-
-template <class T>
-Option<T> ArraySequence<T>::try_get(int index) const {
-    if (index < 0 || index >= this->get_length()) {
-        return Option<T>(); // None when out of bounds
-    }
-    return Option<T>(this->get(index));
 }

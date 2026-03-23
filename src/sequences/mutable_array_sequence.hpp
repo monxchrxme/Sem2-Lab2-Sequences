@@ -41,12 +41,4 @@ public:
     virtual ISequenceBuilder<T>* create_builder() const override {
         return new Builder();
     }
-
-    // slice-split
-    virtual Sequence<T>* slice(int index, int count, const Sequence<T>* elements = nullptr) const override;
 };
-
-template <class T>
-Sequence<T>* MutableArraySequence<T>::slice(int index, int count, const Sequence<T>* elements) const {
-    return this->slice_internal(index, count, elements);
-}

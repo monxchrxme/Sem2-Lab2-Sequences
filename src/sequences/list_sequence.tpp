@@ -112,15 +112,6 @@ ListSequence<T>& ListSequence<T>::operator=(ListSequence<T> &&other) noexcept {
 }
 
 // getters
-template <class T>
-const T& ListSequence<T>::get_first() const {
-    return this->items->get_first();
-}
-
-template <class T>
-const T& ListSequence<T>::get_last() const {
-    return this->items->get_last();
-}
 
 template <class T>
 const T& ListSequence<T>::get(int index) const {
@@ -172,30 +163,4 @@ Sequence<T>* ListSequence<T>::remove_at(int index) {
     target->items->remove_at(index);
 
     return target;
-}
-
-// Try-semantics
-
-template <class T>
-Option<T> ListSequence<T>::try_get_first() const {
-    if (this->get_length() == 0) {
-        return Option<T>(); // return None
-    }
-    return Option<T>(this->get(0)); // return Some(value)
-}
-
-template <class T>
-Option<T> ListSequence<T>::try_get_last() const {
-    if (this->get_length() == 0) {
-        return Option<T>();
-    }
-    return Option<T>(this->get(this->get_length() - 1));
-}
-
-template <class T>
-Option<T> ListSequence<T>::try_get(int index) const {
-    if (index < 0 || index >= this->get_length()) {
-        return Option<T>(); // None when out of bounds
-    }
-    return Option<T>(this->get(index));
 }

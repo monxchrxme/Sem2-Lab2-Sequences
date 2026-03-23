@@ -3,6 +3,40 @@
 #include "../types/exceptions.hpp"
 
 template <class T>
+Sequence<T>* Sequence<T>::slice(int index, int count, const Sequence<T>* elements) const {
+    int len = this->get_length();
+    int start = (index < 0) ? (len + index) : index;
+    if (start < 0 || start > len) throw IndexOutOfRange("Slice: Out of bounds");
+    if (count < 0) count = 0;
+    if (start + count > len) count = len - start;
+
+    ISequenceBuilder<T>* builder = this->create_builder();
+
+    int curr_idx = 0;
+    for (const auto& item : *this) {
+        if (curr_idx == start && elements) {
+            for (const auto& el : *elements) {
+                builder->append(el);
+            }
+        }
+        if (curr_idx < start || curr_idx >= start + count) {
+            builder->append(item);
+        }
+        curr_idx++;
+    }
+
+    if (start == len && elements) {
+        for (const auto& el : *elements) {
+            builder->append(el);
+        }
+    }
+
+    Sequence<T>* result = builder->build();
+    delete builder;
+    return result;
+}
+
+template <class T>
 Sequence<T>* Sequence<T>::map(T (*mapper)(const T&)) const {
     ISequenceBuilder<T>* builder = this->create_builder();
 
@@ -86,4 +120,42 @@ Sequence<T>* Sequence<T>::concat(Sequence<T> *list) const {
     Sequence<T>* result = builder->build();
     delete builder;
     return result;
+}
+
+// getters
+
+template <class T>
+const T& Sequence<T>::get_first() const {
+    if (this->get_length() == 0) {
+        throw IndexOutOfRange("Sequence is empty");
+    }
+    return this->get(0);
+}
+
+template <class T>
+const T& Sequence<T>::get_last() const {
+    if (this->get_length() == 0) {
+        throw IndexOutOfRange("Sequence is empty");
+    }
+    return this->get(this->get_length() - 1);
+}
+
+// Try-semantics
+
+template <class T>
+Option<T> Sequence<T>::try_get(int index) const {
+    if (index < 0 || index >= this->get_length()) {
+        return Option<T>(); // None when out of bounds
+    }
+    return Option<T>(this->get(index));
+}
+
+template <class T>
+Option<T> Sequence<T>::try_get_first() const {
+    return this->try_get(0);
+}
+
+template <class T>
+Option<T> Sequence<T>::try_get_last() const {
+    return this->try_get(this->get_length() - 1);
 }

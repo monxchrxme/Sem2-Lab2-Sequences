@@ -21,29 +21,28 @@ public:
     virtual Sequence<T>* clone() const override = 0;
 
     // getters
-    virtual const T& get_first() const = 0;
-    virtual const T& get_last() const = 0;
+    const T& get_first() const;
+    const T& get_last() const;
+
     Sequence<T>* get_subsequence(int start_index, int end_index) const;
+    Sequence<T>* concat(Sequence<T> *list) const;
+    Sequence<T>* slice(int index, int count, const Sequence<T>* elements = nullptr) const;
 
     // modifying operations
     virtual Sequence<T>* append(const T &item) = 0;
     virtual Sequence<T>* prepend(const T &item) = 0;
     virtual Sequence<T>* insert_at(const T &item, int index) = 0;
     virtual Sequence<T>* remove_at(int index) = 0;
-    Sequence<T>* concat(Sequence<T> *list) const;
 
     // map-reduce operations
     virtual Sequence<T>* map(T (*mapper)(const T&)) const;
     virtual Sequence<T>* where(bool (*predicate)(const T&)) const;
     virtual T reduce(T (*reducer)(const T&, const T&), const T &initial_value) const;
 
-    // split-slice operations
-    virtual Sequence<T>* slice(int index, int count, const Sequence<T>* elements = nullptr) const = 0;
-
     // Try-semantics
-    virtual Option<T> try_get_first() const = 0;
-    virtual Option<T> try_get_last() const = 0;
-    virtual Option<T> try_get(int index) const = 0;
+    Option<T> try_get_first() const;
+    Option<T> try_get_last() const;
+    Option<T> try_get(int index) const;
 
     // overloading operators << and []
     // operator[] (read-only, guarantees immutability safety)
@@ -101,35 +100,6 @@ public:
 
     CppIterator end() const {
         return CppIterator(this, this->get_length()); // end immediately after the last one
-    }
-
-protected:
-    Sequence<T>* slice_internal(int index, int count, const Sequence<T>* elements) const {
-        int len = this->get_length();
-        int start = (index < 0) ? (len + index) : index;
-        if (std::abs(index) > len) throw IndexOutOfRange("Slice: Out of bounds");
-        if (count < 0) count = 0;
-        if (start + count > len) count = len - start;
-
-        ISequenceBuilder<T> *builder = this->create_builder();
-
-        for (int i = 0; i < start; ++i) {
-            builder->append(this->get(i));
-        }
-
-        if (elements != nullptr) {
-            for (int i = 0; i < elements->get_length(); ++i) {
-                builder->append(elements->get(i));
-            }
-        }
-
-        for (int i = start + count; i < len; ++i) {
-            builder->append(this->get(i));
-        }
-
-        Sequence<T> *result = builder->build();
-        delete builder;
-        return result;
     }
 };
 
