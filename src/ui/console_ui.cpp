@@ -184,14 +184,16 @@ MutableArraySequence<int>* read_int_array_temp() {
 
 void cmd_create_seq() {
     std::cout << "  1. Mutable ArraySequence\n  2. Immutable ArraySequence\n"
-              << "  3. Mutable ListSequence\n   4. Immutable ListSequence\n";
+              << "  3. Mutable ListSequence \n  4. Immutable ListSequence\n";
     int choice;
     do { choice = read_int("  > "); } while (choice < 1 || choice > 4);
 
     auto* tmp = read_int_array_temp();
     int sz = tmp->get_length();
     int* raw = new int[sz];
-    for (int i = 0; i < sz; i++) raw[i] = tmp->get(i);
+    for (int i = 0; i < sz; i++) {
+        raw[i] = tmp->get(i);
+    }
     delete tmp;
 
     switch (choice) {
@@ -217,10 +219,14 @@ void cmd_create_bit() {
     int n;
     do { n = read_int("  Количество бит: "); } while (n < 0);
     bool* bits = new bool[n];
-    for (int i = 0; i < n; i++) bits[i] = read_bit("  бит (0/1): ");
+    for (int i = 0; i < n; i++) {
+        bits[i] = read_bit("  бит (0/1): ");
+    }
 
-    BitSequence* bs = new BitSequence();
-    for(int i = 0; i < n; ++i) bs->append(Bit(bits[i]));
+    auto* bs = new BitSequence();
+    for(int i = 0; i < n; ++i) {
+        bs->append(Bit(bits[i]));
+    }
     add_bit(bs);
 
     delete[] bits;
@@ -240,7 +246,8 @@ void cmd_seq_base_ops(int idx) {
             case 2: maybe_add_seq(k, s->prepend(read_int("  Значение: ")), s); break;
             case 3: {
                 int v = read_int("  Значение: "); int pos = read_int("  Индекс: ");
-                maybe_add_seq(k, s->insert_at(v, pos), s); break;
+                maybe_add_seq(k, s->insert_at(v, pos), s);
+                break;
             }
             case 4: maybe_add_seq(k, s->remove_at(read_int("  Индекс: ")), s); break;
             case 5: {
@@ -255,7 +262,10 @@ void cmd_seq_base_ops(int idx) {
 }
 
 void cmd_seq_transform_ops(int idx) {
-    SeqEntry* e = seq_reg[idx]; Sequence<int>* s = e->ptr; SeqKind k = e->kind;
+    SeqEntry* e = seq_reg[idx];
+    Sequence<int>* s = e->ptr;
+    SeqKind k = e->kind;
+
     std::cout << "\n  -- Трансформации --\n"
               << "  1. get_subsequence    2. concat    3. slice    4. split\n";
     try {
@@ -299,7 +309,10 @@ void cmd_seq_transform_ops(int idx) {
 }
 
 void cmd_seq_functional_ops(int idx) {
-    SeqEntry* e = seq_reg[idx]; Sequence<int>* s = e->ptr; SeqKind k = e->kind;
+    SeqEntry* e = seq_reg[idx];
+    Sequence<int>* s = e->ptr;
+    SeqKind k = e->kind;
+
     std::cout << "\n  -- Map / Where / Reduce / Zip --\n"
               << "  1. map (x*2)      2. where (чётные)\n  3. reduce (сумма) 4. zip\n";
     try {
@@ -347,6 +360,7 @@ void cmd_seq_menu(int idx) {
 // ============================================================
 void cmd_bit_ops(int idx) {
     BitSequence* b = bit_reg[idx]->ptr;
+
     std::cout << "\n  -- Битовые операции --\n"
               << "  1. AND   2. OR   3. XOR   4. NOT\n";
     try {
@@ -362,7 +376,10 @@ void cmd_bit_ops(int idx) {
         } else {
             std::cout << "  [!] Неверный выбор\n";
         }
-    } catch (const std::exception& ex) { std::cout << "  [!] Ошибка: " << ex.what() << "\n"; }
+    }
+    catch (const std::exception& ex) {
+        std::cout << "  [!] Ошибка: " << ex.what() << "\n";
+    }
 }
 
 // ============================================================
@@ -397,17 +414,41 @@ void run_console_ui() {
             case 1: clear_screen(); cmd_create_seq(); wait_for_enter(); break;
             case 2: clear_screen(); cmd_create_bit(); wait_for_enter(); break;
             case 3:
-                if (seq_reg.get_length() == 0) { std::cout << "  [!] Пусто\n"; wait_for_enter(); break; }
-                clear_screen(); cmd_seq_menu(pick_seq("  Номер: ")); break;
+                if (seq_reg.get_length() == 0) {
+                    std::cout << "  [!] Пусто\n";
+                    wait_for_enter();
+                    break;
+                }
+                clear_screen();
+                cmd_seq_menu(pick_seq("  Номер: "));
+                break;
             case 4:
-                if (bit_reg.get_length() == 0) { std::cout << "  [!] Пусто\n"; wait_for_enter(); break; }
-                clear_screen(); cmd_bit_ops(pick_bit("  Номер: ")); wait_for_enter(); break;
+                if (bit_reg.get_length() == 0) {
+                    std::cout << "  [!] Пусто\n";
+                    wait_for_enter();
+                    break;
+                }
+                clear_screen();
+                cmd_bit_ops(pick_bit("  Номер: "));
+                wait_for_enter();
+                break;
             case 5:
-                if (seq_reg.get_length() == 0) { std::cout << "  [!] Пусто\n"; wait_for_enter(); break; }
-                remove_from_reg(seq_reg, pick_seq("  Удалить номер: ")); wait_for_enter(); break;
+                if (seq_reg.get_length() == 0) {
+                    std::cout << "  [!] Пусто\n";
+                    wait_for_enter();
+                    break;
+                }
+                remove_from_reg(seq_reg, pick_seq("  Удалить номер: "));
+                wait_for_enter();
+                break;
             case 6:
-                if (bit_reg.get_length() == 0) { std::cout << "  [!] Пусто\n"; wait_for_enter(); break; }
-                remove_from_reg(bit_reg, pick_bit("  Удалить номер: ")); wait_for_enter(); break;
+                if (bit_reg.get_length() == 0) { std::cout << "  [!] Пусто\n";
+                    wait_for_enter();
+                    break;
+                }
+                remove_from_reg(bit_reg, pick_bit("  Удалить номер: "));
+                wait_for_enter();
+                break;
             default: std::cout << "  [!] Неверная команда\n"; wait_for_enter();
         }
     }
