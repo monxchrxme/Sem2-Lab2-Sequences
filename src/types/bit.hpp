@@ -7,6 +7,10 @@ public:
     Bit(bool v = false) : value(v) {}
     Bit(int v) : value(v != 0) {}
 
+    bool get() const {
+        return value;
+    }
+
     // casting back to bool
     operator bool() const {
         return value;

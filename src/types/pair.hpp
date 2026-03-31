@@ -18,3 +18,9 @@ template <class T, class U>
 Pair<T, U> MakePair(const T& f, const U& s) {
     return Pair<T, U>(f, s);
 }
+
+template <class T, class U>
+std::ostream& operator<<(std::ostream& os, const Pair<T, U>& p) {
+    os << "(" << p.first << ", " << p.second << ")";
+    return os;
+}

@@ -4,6 +4,8 @@
 # чтобы элегантно передавать пути к заголовочным файлам всем, кто от нее зависит.
 add_library(seq_lib STATIC
         sequences/bit_sequence.cpp
+        ui/console_ui.cpp
+        ui/console_utils.cpp
 )
 
 # Говорим CMake: "Тот, кто прилинкует seq_lib, должен искать заголовочные файлы в текущей папке src".
