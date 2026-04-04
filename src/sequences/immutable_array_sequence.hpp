@@ -25,7 +25,7 @@ public:
         virtual Sequence<T>* build() override {
             int len = temp_buffer->get_length();
             T* arr = new T[len];
-            for(int i = 0; i < len; ++i) {
+            for (int i = 0; i < len; ++i) {
                 arr[i] = temp_buffer->get(i);
             }
 

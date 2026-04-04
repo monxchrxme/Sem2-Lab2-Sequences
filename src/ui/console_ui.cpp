@@ -63,7 +63,7 @@ int read_int(const char* prompt = "") {
     int v;
     while (true) {
         if (*prompt) std::cout << prompt;
-        if (std::cin >> v) {
+        if (std::cin >> v) { //TODO разбить отдельно - чтение элемента и проверку того, прочиталось ли это правильно с потока и записалось ли в переменную окаянную
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return v;
         }

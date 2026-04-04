@@ -53,5 +53,5 @@ public:
     }
 
 private:
-    bool value;
+    bool value; //TODO хранится в int или uchar? для экономии места? подумать над этим
 };

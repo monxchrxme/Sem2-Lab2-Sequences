@@ -52,7 +52,7 @@ public:
     // fabric method: each class knows which builder it needs
     virtual ISequenceBuilder<T>* create_builder() const = 0;
 
-    // operator<<
+    // operator<< //TODO отдельный файл вынести зависимость от iostream
     friend std::ostream& operator<<(std::ostream& os, const Sequence<T>& seq) {
         os << "[";
         bool first = true;
@@ -69,7 +69,7 @@ public:
     }
 
     //  Cpp-style Range-based for loop (for (auto x : seq))
-    class CppIterator {
+    class CppIterator { //TODO перенести реализацию в list_sequence для того, чтобы не было проблемы с квадратичной сложность (подумать над этим)
     private:
         const Sequence<T>* seq;
         int current_index;
