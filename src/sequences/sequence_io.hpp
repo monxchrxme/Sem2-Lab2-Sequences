@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-
 #include "interfaces/sequence.hpp"
 
 // free function
@@ -12,13 +11,18 @@ std::ostream& operator<<(std::ostream& os, const Sequence<T>& seq) {
     os << "[";
     bool first = true;
 
-    for (const auto& item : seq) {
+    IEnumerator<T>* it = seq.get_enumerator();
+
+    while (it->move_next()) {
         if (!first) {
             os << ", ";
         }
-        os << item;
+        os << it->get_current();
         first = false;
     }
     os << "]";
+
+    delete it;
+
     return os;
 }

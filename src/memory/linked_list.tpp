@@ -170,7 +170,7 @@ LinkedList<T>* LinkedList<T>::get_sub_list(int start_index, int end_index) const
         throw IndexOutOfRange("LinkedList::get_sub_list: Invalid indices");
     }
 
-    LinkedList<T> *sub_list = new LinkedList<T>();
+    auto *sub_list = new LinkedList<T>();
     try {
         Node *current = this->head;
         for (int i = 0; i <= end_index; ++i) {
@@ -282,7 +282,7 @@ void LinkedList<T>::remove_at(int index) {
 
 template <class T>
 LinkedList<T>* LinkedList<T>::concat(LinkedList<T> *list) const {
-    LinkedList<T> *new_list = new LinkedList<T>(*this); // secure copy via the constructor
+    auto *new_list = new LinkedList<T>(*this); // secure copy via the constructor
 
     if (list != nullptr) {
         try {

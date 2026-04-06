@@ -24,8 +24,38 @@ public:
 
     ~ListSequence() override;
 
-    // iterator
+    // iterators
     IEnumerator<T>* get_enumerator() const override;
+
+    class CppIterator {
+    private:
+        typename LinkedList<T>::Node* current_node;
+
+    public:
+        explicit CppIterator(typename LinkedList<T>::Node* node) : current_node(node) {}
+
+        const T& operator*() const {
+            return current_node->data;
+        }
+
+        // go to next node by pointer next, not by get(index)
+        CppIterator& operator++() {
+            current_node = current_node->next;
+            return *this;
+        }
+
+        bool operator!=(const CppIterator& other) const {
+            return current_node != other.current_node;
+        }
+    };
+
+    // method for using for (auto x : list_seq)
+    CppIterator begin() const {
+        return CppIterator(this->items->get_head_node());
+    }
+    CppIterator end() const {
+        return CppIterator(nullptr);
+    }
 
     // operators=
     // copy assignment operator
@@ -40,6 +70,11 @@ public:
     // getters
     const T& get(int index) const override;
     [[nodiscard]] int get_length() const override;
+    // Enumerator requires
+    LinkedList<T>* get_internal_list() const {
+        return items;
+    }
+
 
     // modifying operations
     Sequence<T>* append(const T &item) override;

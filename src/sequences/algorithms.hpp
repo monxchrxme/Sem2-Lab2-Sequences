@@ -10,7 +10,10 @@ Sequence<Sequence<T>*>* Split(const Sequence<T>* seq, bool (*condition)(const T&
     auto result = new MutableArraySequence<Sequence<T>*>();
     ISequenceBuilder<T>* current_chunk = seq->create_builder();
 
-    for (const auto& item : *seq) {
+    IEnumerator<T>* it = seq->get_enumerator();
+    while (it->move_next()) {
+        const auto& item = it->get_current();
+
         if (condition(item)) {
             result->append(current_chunk->build());
             delete current_chunk;
@@ -19,6 +22,8 @@ Sequence<Sequence<T>*>* Split(const Sequence<T>* seq, bool (*condition)(const T&
             current_chunk->append(item);
         }
     }
+    delete it;
+
     result->append(current_chunk->build());
     delete current_chunk;
 
@@ -51,10 +56,14 @@ Pair<Sequence<T>*, Sequence<U>*> Unzip(const Sequence<Pair<T, U>>* seq) {
     auto builder1 = new typename MutableArraySequence<T>::Builder();
     auto builder2 = new typename MutableArraySequence<U>::Builder();
 
-    for (const auto& p : *seq) {
+    IEnumerator<Pair<T, U>>* it = seq->get_enumerator();
+    while (it->move_next()) {
+        const auto& p = it->get_current();
+
         builder1->append(p.first);
         builder2->append(p.second);
     }
+    delete it;
 
     Pair<Sequence<T>*, Sequence<U>*> result(builder1->build(), builder2->build());
 
@@ -72,11 +81,14 @@ Sequence<U>* Map(const Sequence<T>* seq, U (*mapper)(const T&)) {
 
     auto builder = new typename MutableArraySequence<U>::Builder();
 
-    for (const auto& item : *seq) {
-        builder->append(mapper(item));
+    IEnumerator<T>* it = seq->get_enumerator();
+    while (it->move_next()) {
+        builder->append(mapper(it->get_current()));
     }
+    delete it;
 
     Sequence<U>* result = builder->build();
     delete builder;
+
     return result;
 }

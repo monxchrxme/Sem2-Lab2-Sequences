@@ -7,30 +7,36 @@ template <class T>
 class ListEnumerator : public IEnumerator<T> {
 private:
     const ListSequence<T>* sequence;
-    int current_index;
+
+    // store pointer to the current node
+    // typename is required because Node depends on the template parameter T
+    typename LinkedList<T>::Node* current_node;
+    bool is_started;
 
 public:
-    explicit ListEnumerator(const ListSequence<T>* seq) : sequence(seq), current_index(-1) {}
+    explicit ListEnumerator(const ListSequence<T>* seq) : sequence(seq), current_node(nullptr), is_started(false) {}
 
     bool move_next() override {
-        if (current_index + 1 < sequence->get_length()) {
-            current_index++;
-            return true;
-        } else {
-            current_index = sequence->get_length();
-            return false;
+        if (!is_started) {
+            current_node = sequence->get_internal_list()->get_head_node();
+            is_started = true;
+        } else if (current_node != nullptr) {
+            current_node = current_node->next;
         }
+
+        return current_node != nullptr;
     }
 
     const T& get_current() const override {
-        if (current_index < 0 || current_index >= sequence->get_length()) {
+        if (!current_node) {
             throw IndexOutOfRange("IEnumerator: Invalid state");
         }
-        return sequence->get(current_index);
+        return current_node->data;
     }
 
     void reset() override {
-        current_index = -1;
+        current_node = nullptr;
+        is_started = false;
     }
 };
 

@@ -184,20 +184,3 @@ TEST(EnumeratorTest, CppRangeBasedForLoop_EmptySequence) {
 
     EXPECT_EQ(iterations, 0);
 }
-
-// test for the absence of Object Slicing when working via an interface
-TEST(EnumeratorTest, CppRangeBasedForLoop_Polymorphic) {
-    int data[] = {42, 43};
-    MutableListSequence<int> list_seq(data, 2);
-
-    // viewing the list via a pointer to the abstract base class
-    const Sequence<int>* base_ptr = &list_seq;
-
-    int sum = 0;
-    // C++ range-based for loop should work even through a polymorphic pointer
-    for (const auto& item : *base_ptr) {
-        sum += item;
-    }
-
-    EXPECT_EQ(sum, 85);
-}

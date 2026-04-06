@@ -6,6 +6,20 @@
 template <class T>
 class LinkedList {
 public:
+    struct Node {
+        T data;
+        Node *next;
+        Node *prev;
+
+        // node constructor
+        explicit Node(const T &data) : data(data), next(nullptr), prev(nullptr) {}
+    };
+
+    // method for start iterating
+    Node* get_head_node() const {
+        return head;
+    }
+
     // constructors
     LinkedList();
     LinkedList(T *items, int count);
@@ -23,7 +37,7 @@ public:
     const T& get_first() const;
     const T& get_last() const;
     const T& get(int index) const;
-    int get_length() const;
+    [[nodiscard]] int get_length() const;
 
     LinkedList<T>* get_sub_list(int start_index, int end_index) const;
 
@@ -36,15 +50,6 @@ public:
     LinkedList<T>* concat(LinkedList<T> *list) const;
 
 private:
-    struct Node {
-        T data;
-        Node *next;
-        Node *prev;
-
-        // node constructor
-        explicit Node(const T &data) : data(data), next(nullptr), prev(nullptr) {}
-    };
-
     Node *head;
     Node *tail;
     int size;

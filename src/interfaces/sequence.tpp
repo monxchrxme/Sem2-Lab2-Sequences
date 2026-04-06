@@ -13,11 +13,17 @@ Sequence<T>* Sequence<T>::slice(int index, int count, const Sequence<T>* element
     ISequenceBuilder<T>* builder = this->create_builder();
 
     int curr_idx = 0;
-    for (const auto& item : *this) {
+    IEnumerator<T>* it = this->get_enumerator();
+
+    while (it->move_next()) {
+        const auto& item = it->get_current();
         if (curr_idx == start && elements) {
-            for (const auto& el : *elements) {
-                builder->append(el);
+
+            IEnumerator<T>* el_it = elements->get_enumerator();
+            while (el_it->move_next()) {
+                builder->append(el_it->get_current());
             }
+            delete el_it;
         }
         if (curr_idx < start || curr_idx >= start + count) {
             builder->append(item);
@@ -26,9 +32,11 @@ Sequence<T>* Sequence<T>::slice(int index, int count, const Sequence<T>* element
     }
 
     if (start == len && elements) {
-        for (const auto& el : *elements) {
-            builder->append(el);
+        IEnumerator<T>* el_it = elements->get_enumerator();
+        while (el_it->move_next()) {
+            builder->append(el_it->get_current());
         }
+        delete el_it;
     }
 
     Sequence<T>* result = builder->build();
@@ -40,10 +48,12 @@ template <class T>
 T Sequence<T>::reduce(T (*reducer)(const T&, const T&), const T &initial_value) const {
     T result = initial_value;
 
-    for (const auto& item : *this) {
-        result = reducer(item, result);
-    }
+    IEnumerator<T>* it = this->get_enumerator();
 
+    while (it->move_next()) {
+        result = reducer(it->get_current(), result);
+    }
+    delete it;
     return result;
 }
 
@@ -51,14 +61,20 @@ template <class T>
 Sequence<T>* Sequence<T>::where(bool (*predicate)(const T&)) const {
     ISequenceBuilder<T>* builder = this->create_builder();
 
-    for (const auto& item : *this) {
+    IEnumerator<T>* it = this->get_enumerator();
+
+    while (it->move_next()) {
+        const auto& item = it->get_current();
         if (predicate(item)) {
             builder->append(item);
         }
     }
 
+    delete it;
+
     Sequence<T>* result = builder->build();
     delete builder;
+
     return result;
 }
 
@@ -73,7 +89,10 @@ Sequence<T>* Sequence<T>::get_subsequence(int start_index, int end_index) const 
     ISequenceBuilder<T>* builder = this->create_builder();
     int current_index = 0;
 
-    for (const auto& item : *this) {
+    IEnumerator<T>* it = this->get_enumerator();
+    while (it->move_next()) {
+        const auto& item = it->get_current();
+
         if (current_index >= start_index && current_index <= end_index) {
             builder->append(item);
         }
@@ -82,6 +101,7 @@ Sequence<T>* Sequence<T>::get_subsequence(int start_index, int end_index) const 
         }
         current_index++;
     }
+    delete it;
 
     Sequence<T>* result = builder->build();
     delete builder;
@@ -96,13 +116,17 @@ Sequence<T>* Sequence<T>::concat(Sequence<T> *list) const {
 
     ISequenceBuilder<T>* builder = this->create_builder();
 
-    for (const auto& item : *this) {
-        builder->append(item);
+    IEnumerator<T>* it1 = this->get_enumerator();
+    while (it1->move_next()) {
+        builder->append(it1->get_current());
     }
+    delete it1;
 
-    for (const auto& item : *list) {
-        builder->append(item);
+    IEnumerator<T>* it2 = list->get_enumerator();
+    while (it2->move_next()) {
+        builder->append(it2->get_current());
     }
+    delete it2;
 
     Sequence<T>* result = builder->build();
     delete builder;

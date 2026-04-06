@@ -42,7 +42,7 @@ public:
     Option<T> try_get_last() const;
     Option<T> try_get(int index) const;
 
-    // overloading operators << and []
+    // overloading operator []
     // operator[] (read-only, guarantees immutability safety)
     const T& operator[](int index) const {
         return this->get(index);
@@ -50,39 +50,6 @@ public:
 
     // fabric method: each class knows which builder it needs
     virtual ISequenceBuilder<T>* create_builder() const = 0;
-
-    //  Cpp-style Range-based for loop (for (auto x : seq))
-    class CppIterator { //TODO перенести реализацию в list_sequence для того, чтобы не было проблемы с квадратичной сложность (подумать над этим)
-    private:
-        const Sequence<T>* seq;
-        int current_index;
-
-    public:
-        CppIterator(const Sequence<T>* sequence, int index) : seq(sequence), current_index(index) {}
-        // 1. dereference operator (retrieving the value)
-        const T& operator*() const {
-            return seq->get(current_index);
-        }
-
-        // 2. increment operator (step forward)
-        CppIterator& operator++() {
-            current_index++;
-            return *this;
-        }
-
-        // 3. comparison operator (have we reached the end?)
-        bool operator!=(const CppIterator& other) const {
-            return current_index != other.current_index;
-        }
-    };
-
-    CppIterator begin() const {
-        return CppIterator(this, 0); // begin with 0 index
-    }
-
-    CppIterator end() const {
-        return CppIterator(this, this->get_length()); // end immediately after the last one
-    }
 };
 
 #include "sequence.tpp"

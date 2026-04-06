@@ -24,8 +24,36 @@ public:
 
     ~ArraySequence() override;
 
-    // iterator
+    // iterators
     IEnumerator<T>* get_enumerator() const override;
+
+    class CppIterator {
+    private:
+        const ArraySequence<T>* seq;
+        int current_index;
+
+    public:
+        CppIterator(const ArraySequence<T>* sequence, int index) : seq(sequence), current_index(index) {}
+
+        const T& operator*() const {
+            return seq->get(current_index);
+        }
+        CppIterator& operator++() {
+            current_index++;
+            return *this;
+        }
+        bool operator!=(const CppIterator& other) const {
+            return current_index != other.current_index;
+        }
+    };
+
+    // methods for using for (auto x : array_seq)
+    CppIterator begin() const {
+        return CppIterator(this, 0);
+    }
+    CppIterator end() const {
+        return CppIterator(this, this->get_length());
+    }
 
     // operators=
     // copy assignment operator
