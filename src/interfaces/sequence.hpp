@@ -5,20 +5,19 @@
 #include "isequence_builder.hpp"
 #include "../types/exceptions.hpp"
 #include "../types/option.hpp"
-#include <iostream>
 
 template <class T>
 class Sequence : public ICollection<T>, public IEnumerable<T> {
 public:
     virtual ~Sequence() = default;
 
-    virtual IEnumerator<T>* get_enumerator() const override = 0;
+    IEnumerator<T>* get_enumerator() const override = 0;
 
     // fabric methods (virtual constructors)
     // create an empty sequence of the same type (array or list)
-    virtual Sequence<T>* create_empty() const override = 0;
+    Sequence<T>* create_empty() const override = 0;
     // create an exact copy of the current sequence
-    virtual Sequence<T>* clone() const override = 0;
+    Sequence<T>* clone() const override = 0;
 
     // getters
     const T& get_first() const;
@@ -51,22 +50,6 @@ public:
 
     // fabric method: each class knows which builder it needs
     virtual ISequenceBuilder<T>* create_builder() const = 0;
-
-    // operator<< //TODO отдельный файл вынести зависимость от iostream
-    friend std::ostream& operator<<(std::ostream& os, const Sequence<T>& seq) {
-        os << "[";
-        bool first = true;
-
-        for (const auto& item : seq) {
-            if (!first) {
-                os << ", ";
-            }
-            os << item;
-            first = false;
-        }
-        os << "]";
-        return os;
-    }
 
     //  Cpp-style Range-based for loop (for (auto x : seq))
     class CppIterator { //TODO перенести реализацию в list_sequence для того, чтобы не было проблемы с квадратичной сложность (подумать над этим)

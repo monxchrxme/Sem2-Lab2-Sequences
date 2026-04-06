@@ -11,6 +11,7 @@
 #include "../sequences/immutable_list_sequence.hpp"
 #include "../sequences/bit_sequence.hpp"
 #include "../sequences/algorithms.hpp"
+#include "../sequences/sequence_io.hpp"
 #include "../types/pair.hpp"
 #include "../types/option.hpp"
 
@@ -63,14 +64,18 @@ int read_int(const char* prompt = "") {
     int v;
     while (true) {
         if (*prompt) std::cout << prompt;
-        if (std::cin >> v) { //TODO разбить отдельно - чтение элемента и проверку того, прочиталось ли это правильно с потока и записалось ли в переменную окаянную
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            return v;
-        }
+        std::cin >> v;
+
         if (std::cin.eof()) {
             std::cout << "\n[!] Обнаружен конец потока (EOF). Завершение работы\n";
             exit(0);
         }
+
+        if (!std::cin.fail()) {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return v;
+        }
+
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "  [!] Ошибка. Введите целое число\n";

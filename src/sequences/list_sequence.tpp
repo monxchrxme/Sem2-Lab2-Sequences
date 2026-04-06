@@ -12,7 +12,7 @@ private:
 public:
     explicit ListEnumerator(const ListSequence<T>* seq) : sequence(seq), current_index(-1) {}
 
-    virtual bool move_next() override {
+    bool move_next() override {
         if (current_index + 1 < sequence->get_length()) {
             current_index++;
             return true;
@@ -22,14 +22,14 @@ public:
         }
     }
 
-    virtual const T& get_current() const override {
+    const T& get_current() const override {
         if (current_index < 0 || current_index >= sequence->get_length()) {
             throw IndexOutOfRange("IEnumerator: Invalid state");
         }
         return sequence->get(current_index);
     }
 
-    virtual void reset() override {
+    void reset() override {
         current_index = -1;
     }
 };

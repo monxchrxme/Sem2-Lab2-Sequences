@@ -22,8 +22,8 @@ public:
 
     // getters
     const T& get(int index) const;
-    int get_size() const;
-    int get_capacity() const;
+    [[nodiscard]] int get_size() const;
+    [[nodiscard]] int get_capacity() const;
 
     // operation
     void set(int index, const T &value);

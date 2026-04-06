@@ -3,6 +3,7 @@
 #include "../src/sequences/mutable_array_sequence.hpp"
 #include "../src/sequences/mutable_list_sequence.hpp"
 #include "../src/sequences/bit_sequence.hpp"
+#include "../src/sequences/sequence_io.hpp"
 
 // operator[] test
 

@@ -45,7 +45,9 @@ BitSequence::BitSequence(const BitSequence& other) {
 }
 
 void BitSequence::set_bit_at(int index, bool value) {
-    if (index < 0 || index >= bit_count) throw std::out_of_range("Index out of range");
+    if (index < 0 || index >= bit_count) {
+        throw std::out_of_range("Index out of range");
+    }
 
     int byte_idx = get_byte_index(index);
     int offset = get_bit_offset(index);
@@ -67,7 +69,9 @@ int BitSequence::get_length() const {
 }
 
 const Bit& BitSequence::get(int index) const {
-    if (index < 0 || index >= bit_count) throw std::out_of_range("Index out of range");
+    if (index < 0 || index >= bit_count) {
+        throw std::out_of_range("Index out of range");
+    }
 
     uint8_t current_byte = bytes.get(get_byte_index(index));
     bool bit_value = (current_byte >> get_bit_offset(index)) & 1;
@@ -99,8 +103,12 @@ Sequence<Bit>* BitSequence::prepend(const Bit& item) {
 }
 
 Sequence<Bit>* BitSequence::insert_at(const Bit& item, int index) {
-    if (index < 0 || index > bit_count) throw std::out_of_range("Index out of range");
-    if (index == bit_count) return append(item);
+    if (index < 0 || index > bit_count) {
+        throw std::out_of_range("Index out of range");
+    }
+    if (index == bit_count) {
+        return append(item);
+    }
 
     this->append(Bit(false));
 
@@ -113,7 +121,9 @@ Sequence<Bit>* BitSequence::insert_at(const Bit& item, int index) {
 }
 
 Sequence<Bit>* BitSequence::remove_at(int index) {
-    if (index < 0 || index >= bit_count) throw std::out_of_range("Index out of range");
+    if (index < 0 || index >= bit_count) {
+        throw std::out_of_range("Index out of range");
+    }
 
     for (int i = index; i < bit_count - 1; ++i) {
         this->set_bit_at(i, this->get(i + 1).get());
@@ -179,7 +189,7 @@ BitSequence* BitSequence::bitwise_and(const BitSequence* other) const {
     BitSequence left = this->get_padded_to(target_len);
     BitSequence right = other->get_padded_to(target_len);
 
-    BitSequence* res = new BitSequence();
+    auto* res = new BitSequence();
     for (int i = 0; i < left.bytes.get_length(); ++i) {
         res->bytes.append(left.bytes.get(i) & right.bytes.get(i));
     }
@@ -193,7 +203,7 @@ BitSequence* BitSequence::bitwise_or(const BitSequence* other) const {
     BitSequence left = this->get_padded_to(target_len);
     BitSequence right = other->get_padded_to(target_len);
 
-    BitSequence* res = new BitSequence();
+    auto* res = new BitSequence();
     for (int i = 0; i < left.bytes.get_length(); ++i) {
         res->bytes.append(left.bytes.get(i) | right.bytes.get(i));
     }
@@ -207,7 +217,7 @@ BitSequence* BitSequence::bitwise_xor(const BitSequence* other) const {
     BitSequence left = this->get_padded_to(target_len);
     BitSequence right = other->get_padded_to(target_len);
 
-    BitSequence* res = new BitSequence();
+    auto* res = new BitSequence();
     for (int i = 0; i < left.bytes.get_length(); ++i) {
         res->bytes.append(left.bytes.get(i) ^ right.bytes.get(i));
     }
@@ -216,7 +226,7 @@ BitSequence* BitSequence::bitwise_xor(const BitSequence* other) const {
 }
 
 BitSequence* BitSequence::bitwise_not() const {
-    BitSequence* res = new BitSequence();
+    auto* res = new BitSequence();
     for (int i = 0; i < this->bytes.get_length(); ++i) {
 
         res->bytes.append(~this->bytes.get(i));

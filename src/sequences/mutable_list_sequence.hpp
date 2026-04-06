@@ -4,18 +4,18 @@
 template <class T>
 class MutableListSequence : public ListSequence<T> {
 protected:
-    virtual ListSequence<T>* get_instance() override {
+    ListSequence<T>* get_instance() override {
         return this; // mutable struct returns itself
     }
 
 public:
     using ListSequence<T>::ListSequence;
 
-    virtual ListSequence<T>* create_empty() const override {
+    ListSequence<T>* create_empty() const override {
         return new MutableListSequence<T>();
     }
 
-    virtual ListSequence<T>* clone() const override {
+    ListSequence<T>* clone() const override {
         return new MutableListSequence<T>(*this);
     }
 
@@ -28,16 +28,16 @@ public:
             seq = new MutableListSequence<T>();
         }
 
-        virtual void append(const T& item) override {
+        void append(const T& item) override {
             seq->append(item);
         }
 
-        virtual Sequence<T>* build() override {
+        Sequence<T>* build() override {
             return seq;
         }
     };
 
-    virtual ISequenceBuilder<T>* create_builder() const override {
+    ISequenceBuilder<T>* create_builder() const override {
         return new Builder();
     }
 };

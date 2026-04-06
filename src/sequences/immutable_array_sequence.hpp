@@ -5,7 +5,7 @@
 template <class T>
 class ImmutableArraySequence : public ArraySequence<T> {
 protected:
-    virtual ArraySequence<T>* get_instance() override {
+    ArraySequence<T>* get_instance() override {
         return this->clone(); // create complete copy before changing to return it
     }
 
@@ -17,12 +17,14 @@ public:
     private:
         MutableArraySequence<T>* temp_buffer;
     public:
-        Builder() { temp_buffer = new MutableArraySequence<T>(); }
-        virtual void append(const T& item) override {
+        Builder() {
+            temp_buffer = new MutableArraySequence<T>();
+        }
+        void append(const T& item) override {
             temp_buffer->append(item);
         }
 
-        virtual Sequence<T>* build() override {
+        Sequence<T>* build() override {
             int len = temp_buffer->get_length();
             T* arr = new T[len];
             for (int i = 0; i < len; ++i) {
@@ -37,15 +39,15 @@ public:
         }
     };
 
-    virtual ISequenceBuilder<T>* create_builder() const override {
+    ISequenceBuilder<T>* create_builder() const override {
         return new Builder();
     }
 
-    virtual ArraySequence<T>* create_empty() const override {
+    ArraySequence<T>* create_empty() const override {
         return new ImmutableArraySequence<T>();
     }
 
-    virtual ArraySequence<T>* clone() const override {
+    ArraySequence<T>* clone() const override {
         return new ImmutableArraySequence<T>(*this);
     }
 };

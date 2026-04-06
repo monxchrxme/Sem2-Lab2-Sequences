@@ -22,10 +22,10 @@ public:
     // cross-constructor from any collection
     explicit ListSequence(const ICollection<T> &collection);
 
-    virtual ~ListSequence() override;
+    ~ListSequence() override;
 
     // iterator
-    virtual IEnumerator<T>* get_enumerator() const override;
+    IEnumerator<T>* get_enumerator() const override;
 
     // operators=
     // copy assignment operator
@@ -34,18 +34,18 @@ public:
     ListSequence<T>& operator=(ListSequence<T> &&other) noexcept;
 
     // fabric methods
-    virtual Sequence<T>* create_empty() const override = 0;
-    virtual Sequence<T>* clone() const override = 0;
+    Sequence<T>* create_empty() const override = 0;
+    Sequence<T>* clone() const override = 0;
 
     // getters
-    virtual const T& get(int index) const override;
-    virtual int get_length() const override;
+    const T& get(int index) const override;
+    [[nodiscard]] int get_length() const override;
 
     // modifying operations
-    virtual Sequence<T>* append(const T &item) override;
-    virtual Sequence<T>* prepend(const T &item) override;
-    virtual Sequence<T>* insert_at(const T &item, int index) override;
-    virtual Sequence<T>* remove_at(int index) override;
+    Sequence<T>* append(const T &item) override;
+    Sequence<T>* prepend(const T &item) override;
+    Sequence<T>* insert_at(const T &item, int index) override;
+    Sequence<T>* remove_at(int index) override;
 };
 
 #include "list_sequence.tpp"
