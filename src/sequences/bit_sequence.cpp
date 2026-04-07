@@ -76,9 +76,8 @@ const Bit& BitSequence::get(int index) const {
     uint8_t current_byte = bytes.get(get_byte_index(index));
     bool bit_value = (current_byte >> get_bit_offset(index)) & 1;
 
-    // save in a mutable field and return a const reference
-    this->temp_bit = Bit(bit_value);
-    return this->temp_bit;
+    // return reference to one or zero const object
+    return bit_value ? this->bit_one : this->bit_zero;
 }
 
 Sequence<Bit>* BitSequence::clone() const {

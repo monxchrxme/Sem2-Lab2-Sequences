@@ -12,8 +12,9 @@ private:
     MutableArraySequence<uint8_t> bytes;
     int bit_count;
 
-    // to get Bit type be reference (ICollection requires)
-    mutable Bit temp_bit;
+    // to get Bit type by reference (ICollection requires)
+    Bit bit_zero{false};
+    Bit bit_one{true};
 
     static int get_byte_index(int bit_index) {
         return bit_index / 8;
