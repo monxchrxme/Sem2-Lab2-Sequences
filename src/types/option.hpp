@@ -12,11 +12,11 @@ public:
     Option() : _has_value(false), _value() {}
 
     // constructor for the "Some" state (value present)
-    Option(const T& value) : _has_value(true), _value(value) {}
+    explicit Option(const T& value) : _has_value(true), _value(value) {}
 
     // check state
-    bool is_some() const { return _has_value; }
-    bool is_none() const { return !_has_value; }
+    [[nodiscard]] bool is_some() const { return _has_value; }
+    [[nodiscard]] bool is_none() const { return !_has_value; }
 
     // safely extract value (raises an error if None)
     const T& unwrap() const {
